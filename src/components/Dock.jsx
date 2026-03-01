@@ -1,12 +1,13 @@
 import { dockApps } from "#constants/index";
 import { useGSAP } from "@gsap/react";
 import  gsap from 'gsap';
-import { useRef } from "react";
+import { use, useRef } from "react";
 import { Tooltip } from "react-tooltip";  
-
+import { useWindowStore } from "#store/window";
 
 
 const Dock = () => {
+  const {openWindow,closeWindow,windows}=useWindowStore();
   const dockref=useRef(null);
   useGSAP(() => {
     const dock=dockref.current;
@@ -57,7 +58,19 @@ const Dock = () => {
         dock.removeEventListener("mouseleave",resetIcons);
       };
   }, []);
-  const toggleApp=(app)=>{};
+  const toggleApp=(app)=>{
+    if(!app.canOpen) return;
+
+    const window=windows[app.id];
+
+    if(window.isOpen){
+      closeWindow(app.id);
+    } else {
+      openWindow(app.id);
+    }
+
+    console.log(windows);
+  };
 
   return <section id="dock">
     <div ref={dockref} className="dock-container">
